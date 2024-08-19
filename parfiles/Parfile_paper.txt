@@ -1,0 +1,85 @@
+#----------- FILE PATHS
+[FilePaths]
+# Model of the area investigated. 
+model_filename = data/models/model_grid.txt
+
+# Perturbation that will be add to the model.
+perturbation_filename = data/models/delta_m_orig.txt
+
+# File containing the gravity data. 
+data_vals_filename = data/gravity_data/data_vals.txt
+
+# File containing the density response of the background model. 
+data_background_filename = data/gravity_data/data_background.txt
+
+# Path for the ouputs. 
+path_output = output
+
+# Path to the sensitivity matrix. 
+sensit_path = data/SENSIT/
+
+
+#----------- INFORMATION FOR PLOTS - NOT USED IN THE CALCULATION: optional. 
+# Path to rotation matrix [optional]
+rotation_mat_filename = data/rotation_matrix.txt
+
+# Path to geological or other reference model, used for plots only, to add a reference more for comparison [optional]. 
+geol_model_path = data/models/m_geol_orig.txt
+
+# Path to file containing the outline of the geophysical data [optional]. 
+data_outline_filename = data/gravity_data/ouline_core_area_dots.txt
+
+
+#----------- SOLVER PARAMETERS
+[SolverParameters]
+# Type of sensitivity matrix and inversion: 'grav' or 'magn'
+sensit_type = grav
+
+# Number of processors used to calculate the sensitivity kernel (with Tomofast-x inversion platform).
+tomofast_sensit_nbproc = 5
+
+# Flag defining whether we rotate the data (for plotting only).
+use_rotation_matrix = True
+
+# Flag on unit conversion of the input gravity data (apply a 1e2 factor to do mGal).
+unit_conv = True
+
+# Flag on whether we use a mask to reduce the domain where modifications of the model are allowed.
+use_mask_domain = True
+
+# Tolerance on misfit variations during null space navigation.
+eps = 0.23
+
+# Maximum difference between the first model of navigation and the current model (in kg/m^3).
+max_change = 440
+
+# Maximum number of time steps (= modifications of the model).
+num_epochs = 350
+
+# Length of a time step (scales the perturbation at each iteration: small time_step = small perturbation).
+time_step = 100
+
+# Weight of prior model term in cost function. (Negative: larger departures from the original model, Positive: smaller variations. Depth weight can be used here.)
+weight_prior_model = -5.e-12
+
+
+#------------ GRID PARAMETERS
+[GridParameters]
+# Dimensions of the mesh
+nx = 54
+ny = 68
+nz = 31 
+
+
+#------------- PREPROCESSING PARAMETERS
+[PreProcessingParameters]
+# Index of rock unit (by increasing density value) to define the mask on perturbations (in paper: 9 = Mantle).
+ind_unit_mask = 9
+# Distance max in number of cells away from the outline of rock unit considered.
+distance_max = 4 
+
+
+#----------- SAVING OUTPUTS
+[SaveOutput]
+# Flag controlling whether plots will be saved. 
+save_plots = True

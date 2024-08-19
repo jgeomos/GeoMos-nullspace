@@ -1,0 +1,44 @@
+===================================================================================
+GLOBAL
+===================================================================================
+global.outputFolderPath     = output/geomos
+global.description          = Generate sensit for geomos code.
+
+===================================================================================
+MODEL GRID parameters
+===================================================================================
+# nx ny nz
+modelGrid.size                      = 68 54 31
+modelGrid.grav.file                 = data/gravmag/geomos/model_grid.txt
+
+===================================================================================
+DATA parameters
+===================================================================================
+forward.data.grav.nData             = 593
+forward.data.grav.dataGridFile      = data/gravmag/geomos/data_grid.txt
+forward.data.grav.dataValuesFile    = data/gravmag/geomos/data_grid.txt
+
+===================================================================================
+DEPTH WEIGHTING
+===================================================================================
+forward.depthWeighting.type         = 2
+forward.depthWeighting.grav.power   = 0.0d0
+
+===================================================================================
+MATRIX COMPRESSION
+===================================================================================
+# 0-none, 1-wavelet compression.
+forward.matrixCompression.type      = 1
+forward.matrixCompression.rate      = 0.03
+
+===================================================================================
+INVERSION parameters
+===================================================================================
+inversion.nMajorIterations          = 0
+
+===================================================================================
+JOINT INVERSION parameters
+===================================================================================
+inversion.joint.grav.problemWeight  = 1.d0
+inversion.joint.magn.problemWeight  = 0.d0
+
