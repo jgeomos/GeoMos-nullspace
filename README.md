@@ -46,22 +46,18 @@ The values provided are accompanied by a short description of the parameters.
 Python 3.8 or above to run the nullspace code.
 Tomofast-x installation to calculate the sensitivity matrix or a sensitivity matrix in the same format. 
 Working knowledge of geophysics and the elementary of geology.
-The file format for the input files is compatible with Tomofast-x's. 
+The file format for the input files follows Tomofast-x's. 
 
 ### Getting Started
 1. Clone the repository.
 2. Install the necessary dependencies.
 3. Prepare the input data and make sure that the paths in the parameter file are correct.
-5. Execute the main script.
+5. Execute the main script. 
 
-### Note about plotting
-Some values for the parameters of plots are hardcoded (e.g., color limits, geographical locations of selected slices). The best setup for plots is expected to vary between different studies; some manual changes for plot parameters may be required when using the code to a new study area. 
-<!-- ADD THE POSSIBILITY TO SAVE FILES IN VTK FORMAT FOR PARAVIEW IN THE FUTURE -->
-
-## Acknowledgments
+### Acknowledgments
 Jérémie Giraud acknowledges support from European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No. 101032994 for the "GeoMos" project.
 The contribution of Vitaliy Ogarko to this research was supported by the Mineral Exploration Cooperative Research Centre (MinEx CRC), whose activities are funded by the Australian Government's Cooperative Research Centre Programme. Jérémie Giraud also acknowledges support from the RING (Research for Integrative Numerical Geology) consortium.
 
-## Contact for issues, bug reports, feature requests
+### Contact for issues, bug reports, feature requests
 You can contact Jeremie Giraud or Vitaliy Ogarko for bugs, comments or ideas for new features or enhancements: 
 jeremie.giraud@uwa.edu.au / jeremie.giraud@univ-lorraine.fr, Vitaliy Ogarko at vitaliy.ogarko@uwa.edu.au.

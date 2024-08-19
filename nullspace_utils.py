@@ -136,10 +136,10 @@ def get_masked_domain(use_mask_domain, distance_max, ind_unit_mask, dens_model, 
         mask_modelling_domain = np.ones_like(dens_model)
         
     if mask_first_layer:
-        # TODO: mal it "first_layers"
         # Used for the example, not the Pyrenees case.
         mask_modelling_domain[0, :, :] = 0.  # First layer.
-        # mask_modelling_domain[1, :, :] = 0.  # Second layer. 
+        mask_modelling_domain[1, :, :] = 0.  # Second layer.
+        # mask_modelling_domain[2, :, :] = 0.  # Second layer.
 
     return mask_modelling_domain.flatten()
 

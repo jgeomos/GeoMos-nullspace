@@ -179,7 +179,7 @@ def solve(par):
                                                    weight_prior_model)
 
     # Plotting parameters.
-    ppars = npt.PlotParameters(dens_tresh=30, colm=250, slice_x=20, slice_z=10)  # slice_z=12 also interesting.
+    ppars = npt.PlotParameters(dens_tresh=30, colm=250, slice_x=11, slice_z=7)  # slice_z=12 also interesting.
 
     # Define plot parameters.
     ppars = npt.prepare_plots(gpars.dim, mvars, m_diff, ppars, grav_data.outline_coords)
@@ -244,7 +244,7 @@ if __name__ == "__main__":
     # Read command line arguments.
     parser = ArgumentParser()
     parser.add_argument("-p", "--parfile", dest="parfile_path",
-                        help="path to the parameters file", default="parfiles/Parfile_paper.txt")
+                        help="path to the parameters file", default="parfiles/Parfile_example.txt")
 
     # Get the information from the parameter file.
     args = parser.parse_args()

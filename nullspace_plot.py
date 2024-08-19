@@ -7,6 +7,7 @@ from typing import Optional
 from forward_calculation_utils import rotate_mesh
 import nullspace_utils as nu
 import os
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
 @dataclass
@@ -61,7 +62,7 @@ def set_plotprops():
     plt.rcParams.update({'font.size': 13})
 
 
-def plot_addticks_cbar(cbar_title, cbar_ticks):
+def plot_addticks_cbar(cbar_title, cbar_ticks, shrink_perc):
     """
     Add colorbar with specified title and ticks.
 
@@ -70,10 +71,10 @@ def plot_addticks_cbar(cbar_title, cbar_ticks):
     :return: colobar handle.
     """
 
-    cbar = plt.colorbar(shrink=0.75, ticks=cbar_ticks)
+    cbar = plt.colorbar(shrink=shrink_perc, ticks=cbar_ticks)
     # cbar.set_label(cbar_title, labelpad=-20, y=-0.015, rotation=0, fontfamily='serif')
     # cbar.set_label(cbar_title, labelpad=-20, x=1.15, y=-0.02, rotation=0)
-    cbar.set_label(cbar_title, labelpad=-20, x=1.10, y=1.125, rotation=0)
+    cbar.set_label(cbar_title, labelpad=-20, x=1.10, y=1.25, rotation=0)
 
     ## Changing the font of ticks.
     # for i in cbar.ax.yaxis.get_title():
@@ -91,9 +92,15 @@ def calc_plot_coordinates(mpars, ppars):
     :return: dist_profile: 2D ndarray containing, z_plot: 2D ndarray of the corresponding depth.
     """
 
-    x_plot = mpars.x.reshape(mpars.dim)[:, ppars.slice_x, 9:-10]
-    y_plot = mpars.y.reshape(mpars.dim)[:, ppars.slice_x, 9:-10]
-    z_plot = -mpars.z.reshape(mpars.dim)[:, ppars.slice_x, 9:-10]
+    # For Pyrenees case.
+    # x_plot = mpars.x.reshape(mpars.dim)[:, ppars.slice_x, 9:-10]
+    # y_plot = mpars.y.reshape(mpars.dim)[:, ppars.slice_x, 9:-10]
+    # z_plot = -mpars.z.reshape(mpars.dim)[:, ppars.slice_x, 9:-10]
+
+    # For homogenous example.
+    x_plot = mpars.x.reshape(mpars.dim)[:, ppars.slice_x, :]
+    y_plot = mpars.y.reshape(mpars.dim)[:, ppars.slice_x, :]
+    z_plot = mpars.z.reshape(mpars.dim)[:, ppars.slice_x, :]
 
     x_min = np.min(x_plot)
     y_min = np.min(y_plot)
@@ -151,53 +158,56 @@ def plot_grav_perturbation(misfit_evolution, gravity_data, grav_data_diff, rotat
 
     gravity_data.x_data, gravity_data.y_data = rotate_data(gravity_data, rotation_matrix)
 
-    fig = plt.figure(rd.randint(0, int(1e6)), figsize=(15, 6.75), constrained_layout=True)
+    fig = plt.figure(rd.randint(0, int(1e6)), figsize=(10, 7), constrained_layout=True)
+
     # fig.tight_layout()
 
-    ax = fig.add_subplot(4, 2, 1)
-    plt.plot(misfit_evolution[misfit_evolution > 0])
-    plt.title('(a) Data misfit during null space navigation')
+    ax = fig.add_subplot(5, 1, 1)
+    ax.plot(misfit_evolution[misfit_evolution > 0])
+    ax.set_title('(a) Data misfit during null space navigation')
     ax.set_xlabel('Epochs')
     ax.set_ylabel('Data misfit (mGal)')
     add_grid(ax)
 
     # fig = plt.figure(rd.randint(0, int(1e6)), figsize=(8, 8))
-    ax = fig.add_subplot(4, 2, 3)
+    ax = fig.add_subplot(5, 1, 2)
     ax.plot(hamiltonian.total_energy)
-    plt.title('(b) Artificial Hamiltonian')
+    ax.set_title('(b) Artificial Hamiltonian')
     ax.set_ylabel('Total Energy')
     ax.set_xlabel('Epochs')
     add_grid(ax)
 
-    ax = fig.add_subplot(4, 2, 5)
+    ax = fig.add_subplot(5, 1, 3)
     ax.plot(hamiltonian.kinetic_energy)
-    plt.title('(c) Kinetic energy')
+    ax.set_title('(c) Kinetic energy')
     ax.set_ylabel('Kinetic Energy')
     ax.set_xlabel('Epochs')
     add_grid(ax)
 
-    ax = fig.add_subplot(4, 2, 7)
+    ax = fig.add_subplot(5, 1, 4)
     ax.plot(hamiltonian.potential_energy)
-    plt.title('(d) Potential energy')
+    ax.set_title('(d) Potential energy')
     ax.set_ylabel('Potential Energy')
     ax.set_xlabel('Epochs')
     add_grid(ax)
 
-    ax = fig.add_subplot(1, 2, 2)
-    plt.scatter(gravity_data.x_data / 1e3,
+    ax = fig.add_subplot(5, 1, 5)
+    sct = ax.scatter(gravity_data.x_data / 1e3,
                 gravity_data.y_data / 1e3, 50, c=grav_data_diff)  # edgecolors='black')
     # plot_addticks_cbar('mGal', np.linspace(-10, 10, 11))
     # plt.colorbar(extend='both', orientation='horizontal')
-    plt.colorbar()
-    plt.scatter(gravity_data.x_data[np.abs(grav_data_diff) > 1.5] / 1e3,
-                gravity_data.y_data[np.abs(grav_data_diff) > 1.5] / 1e3, 10,
-                marker='.',
-                color='k', linewidth=1)
+
+    divider1 = make_axes_locatable(ax)
+    cax1 = divider1.append_axes("right", size="1.0%", pad=-0.5)
+    cbar = fig.colorbar(sct, cax=cax1)
+    cbar.set_label('$kg.m^{-3}$', labelpad=-20, x=1.10, y=1.25, rotation=0)
+
+
     plot_core_outline(gravity_data.outline_coords)
     add_grid(ax)
     # ax.set_aspect('equal'),
     ax.set_aspect('equal', 'box')
-    plt.title('(e) Forward Bouguer anomaly of perturbation')
+    ax.set_title('(e) Forward Bouguer anomaly of perturbation')
     ax.set_xlabel('Distance (km)')
     ax.set_ylabel('Distance (km)')
 
@@ -226,11 +236,18 @@ def plot_model(ax, mesh_dim1, mesh_dim2, mod, slice_plot, title_string, cmap, cl
 
     # TODO: make use of the PlotParameters class here
 
-    handle = plt.pcolormesh(mesh_dim1, mesh_dim2, mod[:, slice_plot, 9:-10], cmap=cmap, vmin=color_min, vmax=color_max,
+    # For Pyrenees case.
+    # handle = plt.pcolormesh(mesh_dim1, mesh_dim2, mod[:, slice_plot, 9:-10], cmap=cmap, vmin=color_min, vmax=color_max,
+    #                         label='test1')
+
+    # For homogenous model example.
+    # matrix_to_plot = np.asfortranarray(mod[:, slice_plot, :])
+    matrix_to_plot = mod[:, slice_plot, :]
+    handle = plt.pcolormesh(mesh_dim1, mesh_dim2, matrix_to_plot, cmap=cmap, vmin=color_min, vmax=color_max,
                             label='test1')
 
-    plt.text(np.min(mesh_dim1) - 7, np.max(mesh_dim2) + 3, 'A', fontsize=13)
-    plt.text(np.max(mesh_dim1) + 1, np.max(mesh_dim2) + 3, 'B', fontsize=13)
+    # plt.text(np.min(mesh_dim1) - 7, np.max(mesh_dim2) + 3, 'A', fontsize=13)
+    # plt.text(np.max(mesh_dim1) + 1, np.max(mesh_dim2) + 3, 'B', fontsize=13)
 
     add_grid(ax)
 
@@ -294,32 +311,53 @@ def plot_navigation_xsection(mpars, ppars, ind_scatter):
     slice_x = ppars.slice_x
 
     # Get the coordinates for plotting.
-    dist_profile, z_plot = calc_plot_coordinates(mpars, ppars)
+    # Used for the Pyrenees. 
+    # dist_profile, z_plot = calc_plot_coordinates(mpars, ppars)
+
+    z_plot = mpars.z.reshape(mpars.dim)[:, ppars.slice_x, :]
+    x_plot = mpars.x.reshape(mpars.dim)[:, ppars.slice_x, :]
 
     n_subplots = 4
-    n_row_subplots = 2
-    n_columns_subplot = 2
+    n_row_subplots = 4
+    n_columns_subplot = 1
 
     fig = plt.figure(rd.randint(0, int(1e6)), figsize=(13, 7))
 
     for i in range(0, n_subplots):
+
         ax = fig.add_subplot(n_row_subplots, n_columns_subplot, int(i + 1))
-        plot_model(ax, mesh_dim1=dist_profile, mesh_dim2=z_plot, mod=plot_models[i],
+        # Used for the Pyrenees.
+        # plot_model(ax, mesh_dim1=dist_profile, mesh_dim2=z_plot, mod=plot_models[i],
+        #            slice_plot=slice_x, title_string=plot_titles[i], cmap=colorschemes[i], clim=clims[i])
+        plot_model(ax, mesh_dim1=x_plot, mesh_dim2=z_plot, mod=plot_models[i],
                    slice_plot=slice_x, title_string=plot_titles[i], cmap=colorschemes[i], clim=clims[i])
-        plot_addticks_cbar(cbar_titles[i], cbar_ticks[i])
+        plot_addticks_cbar(cbar_titles[i], cbar_ticks[i], shrink_perc=1.)
+
+
+        
+        plt.xlim((ppars.xlims[0], ppars.xlims[1]))
+
+        ax.invert_yaxis()
 
         # Adding the plot of black dots showing differences above a threshold specified in the parameter file.
         # 2nd panel.
-        if i == 1:
-            plt.scatter(dist_profile[ind_scatter[0], ind_scatter[1]-9], z_plot[ind_scatter[0], ind_scatter[1]-9],
-                        alpha=0.5, s=1, c='black', label='Values superior to threshold')
-        # 4th panel.
-        if i == 3:
-            plt.scatter(dist_profile[ind_scatter[0], ind_scatter[1]-9], z_plot[ind_scatter[0], ind_scatter[1]-9],
-                        alpha=0.5, s=1, c='black', label='Values superior to threshold')
+        # if i == 1:
+        #     # For Pyrenees.
+        #     # plt.scatter(dist_profile[ind_scatter[0], ind_scatter[1]-9], z_plot[ind_scatter[0], ind_scatter[1]-9],
+        #     #             alpha=0.5, s=1, c='black', label='Values superior to threshold')
+        #     plt.scatter(x_plot[ind_scatter[0], ind_scatter[1]], z_plot[ind_scatter[0], ind_scatter[1]],
+        #                 alpha=0.5, s=1, c='black', label='Values superior to threshold')
+        # # 4th panel.
+        # if i == 3:
+        #     # For Pyrenees.
+        #     # plt.scatter(dist_profile[ind_scatter[0], ind_scatter[1]-9], z_plot[ind_scatter[0], ind_scatter[1]-9],
+        #     #             alpha=0.5, s=1, c='black', label='Values superior to threshold')
+        #     plt.scatter(x_plot[ind_scatter[0], ind_scatter[1]], z_plot[ind_scatter[0], ind_scatter[1]-9],
+        #                 alpha=0.5, s=1, c='black', label='Values superior to threshold')
 
-    plt.text(np.min(dist_profile) - 7, np.max(z_plot) + 3, 'A', fontsize=13)
-    plt.text(np.max(dist_profile) + 1, np.max(z_plot) + 3, 'B', fontsize=13)
+    # For Pyrenees. 
+    # plt.text(np.min(dist_profile) - 7, np.max(z_plot) + 3, 'A', fontsize=13)
+    # plt.text(np.max(dist_profile) + 1, np.max(z_plot) + 3, 'B', fontsize=13)
     # ax.annotate("Original perturbation", xy=(135, -24), xycoords='data', xytext=(15, -25), textcoords='data',
     #             arrowprops=dict(arrowstyle="->", connectionstyle="arc3"))
     # plt.legend()
@@ -382,7 +420,7 @@ def plot_navigation_depthslice(mpars, ppars, rotation_matrix, indice_scatter, ou
         # ax.set_aspect('equal'),
         ax.set_aspect('equal', 'box')
         plt.title(ppars.plot_titles[i])
-        plot_addticks_cbar(ppars.cbar_titles[i], ppars.cbar_ticks[i])
+        plot_addticks_cbar(ppars.cbar_titles[i], ppars.cbar_ticks[i], shrink_perc=0.2)
         ax.set_xlabel('Easting (km)')
         ax.set_ylabel('Northing (km)')
         plt.xlim(ppars.xlims)
@@ -391,8 +429,9 @@ def plot_navigation_depthslice(mpars, ppars, rotation_matrix, indice_scatter, ou
     plt.scatter(coord_x[indice_scatter[0], indice_scatter[1], indice_scatter[2]],
                 coord_y[indice_scatter[0], indice_scatter[1], indice_scatter[2]],
                 alpha=0.15, s=5, c='black', marker='o', label='Values superior to threshold')
-    ax.annotate("Original perturbation", xy=(633, 4792), xycoords='data', xytext=(600, 4820), textcoords='data',
-                arrowprops=dict(arrowstyle="->", connectionstyle="arc3"))
+    # For Pyrenees field application.
+    # ax.annotate("Original perturbation", xy=(633, 4792), xycoords='data', xytext=(600, 4820), textcoords='data',
+    #             arrowprops=dict(arrowstyle="->", connectionstyle="arc3"))
     # plt.legend()
     fig.tight_layout()
     plt.show()
@@ -400,7 +439,7 @@ def plot_navigation_depthslice(mpars, ppars, rotation_matrix, indice_scatter, ou
     return fig
 
 
-def prepare_plots(dim, mvars, m_diff, ppars, outline_coords):
+def prepare_plots(dim, mvars, m_diff, ppars, outline_coords, xlims=None, ylims=None):
     """
     Define plot parameters: models to plot, titles, limits etc.
     """
@@ -421,21 +460,26 @@ def prepare_plots(dim, mvars, m_diff, ppars, outline_coords):
     ppars.plot_models = (m1, m2, m3, m4)
 
     # Color limits for the subplots.
-    ppars.clims = (np.array([m1.min(), m1.max()]),  # In example shown in paper: m3 is the starting model.
-                   np.array([m1.min(), m1.max()]),
-                   np.array([m1.min(), m1.max()]),
-                   np.array([-200, 200]))
+    # For Pyrenees field case.
+    # ppars.clims = (np.array([m1.min(), m1.max()]),  # In example shown in paper: m3 is the starting model.
+    #                np.array([m1.min(), m1.max()]),
+    #                np.array([m1.min(), m1.max()]),
+    #                np.array([-200, 200]))
+    # For homogenous model example.
+    ppars.clims = (np.array([-300, 300]),
+                   np.array([-300, 300]),
+                   np.array([-300, 300]),
+                   np.array([-300, 300]))
 
     # Colormaps for each subplot.
     ppars.colorschemes = (cc.cm.CET_R4,
                           cc.cm.CET_R4,
                           cc.cm.CET_R4,
                           'seismic')
-
     # Titles for each subplot.
-    ppars.plot_titles = ('(a) Start of nullspace navigation: inverted model',
-                         '(b) End of null space navigation',
-                         '(c) Starting model for inversion',
+    ppars.plot_titles = ('(a) Start of navigation',
+                         '(b) End of navigation',
+                         '(c) Reference model',
                          '(d) Difference: End - Start')
 
     # Titles for each colorbar attached to the subplots.
@@ -445,24 +489,34 @@ def prepare_plots(dim, mvars, m_diff, ppars, outline_coords):
                          '$kg.m^{-3}$')
 
     # Ticks for each colorbar.
-    ppars.cbar_ticks = ([2400, 2600, 2800, 3000, 3200],
-                        [2400, 2600, 2800, 3000, 3200],
-                        [2400, 2600, 2800, 3000, 3200],
+    # For Pyrenees field case.
+    # ppars.cbar_ticks = ([2400, 2600, 2800, 3000, 3200],
+    #                     [2400, 2600, 2800, 3000, 3200],
+    #                     [2400, 2600, 2800, 3000, 3200],
+    #                     [-200, -100, 0, 100, 200])
+    # For homogenous model example.
+    ppars.cbar_ticks = ([-200, -100, 0, 100, 200],
+                        [-200, -100, 0, 100, 200],
+                        [-200, -100, 0, 100, 200],
                         [-200, -100, 0, 100, 200])
 
     # Limits for the plot of top view of depth slices: outline of the area covered by the data plus a buffer around it.
     if outline_coords is not None:
         ppars.xlims = np.array(
-            [-5 + outline_coords[:, 0].min(), 5 + outline_coords[:, 0].max()])
+            [-2.5 + outline_coords[:, 0].min(), 2.5 + outline_coords[:, 0].max()])
         ppars.ylims = np.array(
-            [-5 + outline_coords[:, 1].min(), 5 + outline_coords[:, 1].max()])
+            [-2.5 + outline_coords[:, 1].min(), 2.5 + outline_coords[:, 1].max()])
     else:
         # 1) In the absence of an shape around the area covered by the data, let the xlim and ylim be set automatically.
         # ppars.xlims = None
         # ppars.ylims = None
         # 2) Or do it by hand (unit: kilometers):
-        ppars.xlims = np.array([600, 710])
-        ppars.ylims = np.array([4740, 4850])
+        # For Pyrenees example.
+        # ppars.xlims = np.array([600, 710])
+        # ppars.ylims = np.array([4740, 4850])
+        # For homogenous model example.
+        ppars.xlims = xlims
+        ppars.ylims = ylims
 
     return ppars
 
