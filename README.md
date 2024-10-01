@@ -3,7 +3,7 @@
 [![Python Version](https://img.shields.io/badge/python-3.x-blue.svg)](https://www.python.org/)
 
 ### Version 1.0
-Implemented by Jeremie Giraud<sup>1,2</sup> and Vitaliy Ogarko<sup>2,3</sup>
+Implemention by Jeremie Giraud<sup>1,2</sup> and Vitaliy Ogarko<sup>2,3</sup>
 
 <sup>1</sup> GeoRessources, Université de Lorraine-CNRS, RING – ENSG, Vandoeuvre-les-Nancy, F-54000, France. <br/>
 <sup>2</sup> Centre for Exploration Targeting, School of Earth Sciences, The University of Western Australia, Perth 6000, Australia. <br/>
