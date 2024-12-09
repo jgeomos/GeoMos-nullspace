@@ -160,6 +160,9 @@ def calc_grav_data(grav_data, sensitivity, dens_model, bouguer_anomaly, use_csr_
 
         # Calculate the forward data.
         if bouguer_anomaly:
+            if grav_data.background is None:
+                print('\n Background is None: assuming 0 background! \n')
+                grav_data.background = 0
             data_calc = calc_fwd(sensitivity, model, True, use_csr_matrix) - np.array(grav_data.background)
             grav_data.data_calc = np.ravel(data_calc)
 
