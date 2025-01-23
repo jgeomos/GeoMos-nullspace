@@ -114,7 +114,7 @@ def solve(par):
 
     # ----------------------------------------------------------------------------------
     # Load sensitivity kernel from Tomofast-x.
-    sensit = load_sensit_from_tomofastx(sensit_path, nbproc=tomofast_sensit_nbproc, type=sensit_type, verbose=False)
+    sensit = load_sensit_from_tomofastx(sensit_path, nbproc=tomofast_sensit_nbproc, type=sensit_type, verbose=False, unit_multiplier=1.e3)
 
     # ----------------------------------------------------------------------------------
 
