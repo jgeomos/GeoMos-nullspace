@@ -7,7 +7,7 @@ from typing import Optional
 from forward_calculation_utils import rotate_mesh
 import nullspace_utils as nu
 import os
-
+import vtk
 
 @dataclass
 class PlotParameters:
@@ -39,6 +39,54 @@ class PlotParameters:
     xlims: Optional[np.array] = None
     ylims: Optional[np.array] = None
 
+
+def save_python_to_vtk(voxel_data, grid_par_class, verbose=True, output_file_name='voxet'):
+    # Create VTK structured grid.
+
+    mesh_dims = np.zeros_like(grid_par_class.dim)
+    mesh_dims[0] = grid_par_class.dim[2]
+    mesh_dims[1] = grid_par_class.dim[1]
+    mesh_dims[2] = grid_par_class.dim[0]
+
+    structured_grid = vtk.vtkStructuredGrid()
+    structured_grid.SetDimensions(mesh_dims[0], mesh_dims[1], mesh_dims[2])
+
+    x_grid = grid_par_class.x.reshape(mesh_dims)
+    y_grid = grid_par_class.y.reshape(mesh_dims)
+    z_grid = grid_par_class.z.reshape(mesh_dims)
+
+    # Create points for the grid.
+    points = vtk.vtkPoints()
+    for i in range(mesh_dims[0]):
+        for j in range(mesh_dims[1]):
+            for k in range(mesh_dims[2]):
+                points.InsertNextPoint(x_grid[i,j,k], y_grid[i,j,k], z_grid[i,j,k])
+
+    structured_grid.SetPoints(points)
+
+    # Create voxel data (example: random values).
+    voxel_data = voxel_data.astype(np.float32)
+
+    # Convert NumPy array to VTK array.
+    vtk_array = vtk.vtkFloatArray()
+    vtk_array.SetNumberOfComponents(1)
+    vtk_array.SetName("VoxelData")
+    vtk_array.SetArray(voxel_data, voxel_data.size, 1)
+
+    # Assign data to structured grid
+    structured_grid.GetPointData().SetScalars(vtk_array)
+
+    # Write to .vts file
+    writer = vtk.vtkXMLStructuredGridWriter()
+    writer.SetFileName(output_file_name + ".vts")
+    writer.SetInputData(structured_grid)
+    writer.Write()
+
+    if verbose:
+        print("Voxet saved as " + output_file_name + ".vts for visualization in ParaView.")
+
+    return None
+    
 
 def add_grid(ax):
     """

@@ -19,7 +19,6 @@ https://doi.org/10.1093/gji/ggae192, 2024.
 """
 
 from argparse import ArgumentParser
-import numpy as np
 import matplotlib
 import colorcet as cc
 from pathlib import Path
@@ -33,6 +32,12 @@ from forward_calculation_utils import *
 import nullspace_solver as ns
 import nullspace_plot as npt
 import time
+
+import numpy as np
+
+import platform
+print('Running with Python: ' + platform.python_version())
+
 
 # matplotlib.use('Qt5Agg')
 
@@ -83,6 +88,7 @@ def solve(par):
     mvars.m_geol_orig, _ = tr.read_tomofast_model(geol_model_path, gpars)
 
     # ----------------------------------------------------------------------------------
+  
     # Setup for saving plots.
     save_plots = par.save_plots
 
@@ -114,7 +120,7 @@ def solve(par):
 
     # ----------------------------------------------------------------------------------
     # Load sensitivity kernel from Tomofast-x.
-    sensit = load_sensit_from_tomofastx(sensit_path, nbproc=tomofast_sensit_nbproc, type=sensit_type, verbose=False)
+    sensit = load_sensit_from_tomofastx(sensit_path, nbproc=tomofast_sensit_nbproc, type=sensit_type, verbose=False, unit_multiplier=1.e3)
 
     # ----------------------------------------------------------------------------------
 
@@ -190,6 +196,9 @@ def solve(par):
     # Get rotation matrix used to define the mesh for inversion: needed to relocate data in their geographical location.
     rotation_matrix = nu.get_rotation_matrix(use_rotation_matrix, rotation_mat_filename)
 
+    # Save output model for viz with VTK.
+    npt.save_python_to_vtk(mvars.m_curr, gpars, verbose=True, output_file_name='voxet_m_curr')
+
     # %% ===============================================================================================
     # Do the plotting.
     # ===============================================================================================
@@ -202,6 +211,8 @@ def solve(par):
     # Plot modelling metrics.
     fig_gravpert = npt.plot_grav_perturbation(misfit_data, grav_data, grav_data_deltam, rotation_matrix,
                                               hamiltonian_quantities)
+    
+
 
     # Save the plots.
     npt.save_plot(fig=fig_depthslice, filename=par.path_output + '/Differences_DepthSlice', ext='.png', save=save_plots)
