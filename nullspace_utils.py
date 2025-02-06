@@ -78,7 +78,7 @@ def get_masked_domain(use_mask_domain, distance_max, ind_unit_mask, dens_model, 
             if narrow:
 
                 signdist[i] = skfmm.distance(signdist[i], cell_size, order=2, periodic=False, narrow=2 * cell_size[0])
-                print('Calculating BAND LIMITED signed-dist. (2*dim[0] band)')
+                print('\n Calculating BAND LIMITED signed-dist. (2*dim[0] band)')
             else:
                 signdist[i] = skfmm.distance(signdist[i], cell_size, order=2, periodic=False)
 
@@ -187,7 +187,7 @@ def print_progressbar(iteration, total, prefix='', suffix='', decimals=1, length
     print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd)
     # Print New Line on Complete.
     if iteration == total:
-        print()
+        print('\n')
 
     return
 
@@ -220,7 +220,7 @@ def stopping_check_progress(mvars, shpars, current_iteration_number):
     :param current_iteration_number: int.
     :return: boolean True/False depending on the condition for stopping the process.
     """
-
+    print('\n')
     # Print the progress bar with some info.
     print_progressbar(current_iteration_number + 1, shpars.num_epochs,
                       prefix='Progress over the maximum number of iterations',
@@ -235,7 +235,7 @@ def stopping_check_progress(mvars, shpars, current_iteration_number):
 
         # Backtrack to previous model if changes exceed the maximum allowed change.
         model_downdate(mvars)
-        print('Objective dfference with original reached: stopping at iteration ' + str(current_iteration_number))
+        print('\n Objective dfference with original reached: stopping at iteration ' + str(current_iteration_number) + ' ')
         return False
     else:
         return True

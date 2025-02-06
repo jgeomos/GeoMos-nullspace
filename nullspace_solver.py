@@ -20,7 +20,7 @@ class ModelsVariables:
     # Current model of null space nagivation, all model-cells.
     m_curr: np.array = None
     # Full model with perturbation added of complete space navigation.
-    m_nullspace_last: np.array = np.array((-1., -1.))
+    m_nullspace_last: np.array = 0.
 
     # Geological or other reference model used for plots.
     m_geol_orig: np.array = None  # TODO: make it optional??
