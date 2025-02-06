@@ -26,7 +26,7 @@ def read_tomofast_data(grav_data, filename, data_type):
     grav_data.z_data = data[:, 2]
 
 
-def read_tomofast_model(filename, mpars):
+def read_tomofast_model(filename, mpars, convert_to_km=False):
     """
     Read model values and model grid stored in Tomofast-x format.
     """
@@ -58,8 +58,9 @@ def read_tomofast_model(filename, mpars):
         mpars.z = 0.5 * (model[:, 4] + model[:, 5])
 
         # Convert to km.
-        mpars.x = mpars.x / 1000.
-        mpars.y = mpars.y / 1000.
-        mpars.z = mpars.z / 1000.
+        if convert_to_km:
+            mpars.x = mpars.x / 1000.
+            mpars.y = mpars.y / 1000.
+            mpars.z = mpars.z / 1000.
 
         return m_inv, mpars

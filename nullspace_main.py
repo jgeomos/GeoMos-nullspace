@@ -82,10 +82,10 @@ def solve(par):
     # Read the model and model grid.
     model_filename = par.model_filename
     # mvars.m_beg: starting point for the nullspace navigation (unperturbed model).
-    mvars.m_beg, gpars = tr.read_tomofast_model(model_filename, gpars)
+    mvars.m_beg, gpars = tr.read_tomofast_model(model_filename, gpars, convert_to_km=False)
 
     # Geological model for plots and comparison (not used in computation: only for plots).
-    mvars.m_geol_orig, _ = tr.read_tomofast_model(geol_model_path, gpars)
+    mvars.m_geol_orig, _ = tr.read_tomofast_model(geol_model_path, gpars, convert_to_km=False)
 
     # ----------------------------------------------------------------------------------
   
@@ -148,6 +148,7 @@ def solve(par):
 
     mvars.m_beg = mvars.m_nullspace_subs.copy()  # Starting point for nullspace navigation.
     mvars.m_curr = mvars.m_nullspace_orig.copy()  # Current model.
+
     # ----------------------------------------------------------------------------------
 
     # %% ----------------------------------------------------------------------------------
@@ -196,8 +197,15 @@ def solve(par):
     # Get rotation matrix used to define the mesh for inversion: needed to relocate data in their geographical location.
     rotation_matrix = nu.get_rotation_matrix(use_rotation_matrix, rotation_mat_filename)
 
-    # Save output model for viz with VTK.
-    npt.save_python_to_vtk(mvars.m_curr, gpars, verbose=True, output_file_name='voxet_m_curr')
+    # Save models for viz with VTK.
+    npt.save_model_to_vtk(mvars.m_curr, gpars, verbose=True, output_file_name='voxet_m_curr')
+    npt.save_model_to_vtk(mvars.m_nullspace_orig, gpars, verbose=True, output_file_name='m_nullspace_orig')
+
+    # Save data for viz with VTK.
+    npt.save_data_to_vtk(grav_data, dataype_to_save='data_field', output_file_name='data_field')
+    npt.save_data_to_vtk(grav_data, dataype_to_save='data_calc', output_file_name='data_calc')
+
+    kkkkkk
 
     # %% ===============================================================================================
     # Do the plotting.
