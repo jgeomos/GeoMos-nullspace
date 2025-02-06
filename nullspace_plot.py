@@ -40,50 +40,118 @@ class PlotParameters:
     ylims: Optional[np.array] = None
 
 
-def save_python_to_vtk(voxel_data, grid_par_class, verbose=True, output_file_name='voxet'):
-    # Create VTK structured grid.
+def save_data_to_vtk(geophy_dataclass, datatype_to_save='data_field', filename='data_file', save=True):
+    """
+    geophy_dataclass: GravData class.
+    datatype_to_save can be 'data_calc', 'data_field',  or 'background' (see GravData class).
+    filename: file name without extension.
+    """
 
-    mesh_dims = np.zeros_like(grid_par_class.dim)
-    mesh_dims[0] = grid_par_class.dim[2]
-    mesh_dims[1] = grid_par_class.dim[1]
-    mesh_dims[2] = grid_par_class.dim[0]
+    if save:
+        x = geophy_dataclass.x_data
+        y = geophy_dataclass.y_data
+        z = geophy_dataclass.z_data
 
-    structured_grid = vtk.vtkStructuredGrid()
-    structured_grid.SetDimensions(mesh_dims[0], mesh_dims[1], mesh_dims[2])
+        if datatype_to_save == 'data_field':
+            values = geophy_dataclass.data_field
+        elif datatype_to_save == 'data_calc':
+            values = geophy_dataclass.data_calc
+        elif datatype_to_save == 'background':
+            values = geophy_dataclass.background
+        else: 
+            raise Exception("datatype_to_save can only be data_field, data_calc, or background")
 
-    x_grid = grid_par_class.x.reshape(mesh_dims)
-    y_grid = grid_par_class.y.reshape(mesh_dims)
-    z_grid = grid_par_class.z.reshape(mesh_dims)
+        num_points = len(values)
 
-    # Create points for the grid.
-    points = vtk.vtkPoints()
-    for i in range(mesh_dims[0]):
-        for j in range(mesh_dims[1]):
-            for k in range(mesh_dims[2]):
-                points.InsertNextPoint(x_grid[i,j,k], y_grid[i,j,k], z_grid[i,j,k])
+        # Create a VTK points object.
+        points = vtk.vtkPoints()
+        for i in range(num_points):
+            points.InsertNextPoint(x[i], y[i], z[i])
 
-    structured_grid.SetPoints(points)
+        # Create a PolyData object and set the points.
+        poly_data = vtk.vtkPolyData()
+        poly_data.SetPoints(points)    
 
-    # Create voxel data (example: random values).
-    voxel_data = voxel_data.astype(np.float32)
+        # Add scalar data (optional)
+        scalars_array = vtk.vtkFloatArray()
+        scalars_array.SetName("GeophyData")  # Name appears in ParaView
+        for s in values:
+            scalars_array.InsertNextValue(s)
 
-    # Convert NumPy array to VTK array.
-    vtk_array = vtk.vtkFloatArray()
-    vtk_array.SetNumberOfComponents(1)
-    vtk_array.SetName("VoxelData")
-    vtk_array.SetArray(voxel_data, voxel_data.size, 1)
+        poly_data.GetPointData().SetScalars(scalars_array)
 
-    # Assign data to structured grid
-    structured_grid.GetPointData().SetScalars(vtk_array)
+        # Write to VTK file (.vtp format)
+        writer = vtk.vtkXMLPolyDataWriter()
+        writer.SetFileName(filename + ".vtp")
+        writer.SetInputData(poly_data)
+        writer.Write()
 
-    # Write to .vts file
-    writer = vtk.vtkXMLStructuredGridWriter()
-    writer.SetFileName(output_file_name + ".vts")
-    writer.SetInputData(structured_grid)
-    writer.Write()
+        print("\n VTK data file saved as: " + filename + ".vtp")
 
-    if verbose:
-        print("Voxet saved as " + output_file_name + ".vts for visualization in ParaView.")
+    else:
+        print("\n VTK file for data" + datatype_to_save + " not saved")
+
+    return None
+
+
+def save_model_to_vtk(voxel_data, grid_par_class, filename='voxet', save=True):
+    """
+    Create VTK structured grid from voxel data using the format used in the Nullspace script. 
+
+    voxel_data: Voxel model to save. 
+    grid_par_class: GridParameters dataclass. 
+    Needs changing dimension order if input follows Python: VTK expects Fortran-style (column-major) ordering for structured grids.
+    """
+
+    if save:
+
+        # Change dimension order from row-major to column-major. 
+        mesh_dims = np.zeros_like(grid_par_class.dim)
+        mesh_dims[0] = grid_par_class.dim[2]
+        mesh_dims[1] = grid_par_class.dim[1]
+        mesh_dims[2] = grid_par_class.dim[0]
+
+        # Create the structured grid object.
+        structured_grid = vtk.vtkStructuredGrid()
+        structured_grid.SetDimensions(mesh_dims[0], mesh_dims[1], mesh_dims[2])
+
+        x_grid = grid_par_class.x.reshape(mesh_dims)
+        y_grid = grid_par_class.y.reshape(mesh_dims)
+        z_grid = grid_par_class.z.reshape(mesh_dims)
+
+        # Create points for the grid.
+        points = vtk.vtkPoints()
+        for i in range(mesh_dims[0]):
+            for j in range(mesh_dims[1]):
+                for k in range(mesh_dims[2]):
+                    points.InsertNextPoint(x_grid[i,j,k], y_grid[i,j,k], z_grid[i,j,k])
+
+        structured_grid.SetPoints(points)
+
+        # Create voxel data (example: random values).
+        voxel_data = voxel_data.astype(np.float32)
+
+        # Convert NumPy array to VTK array.
+        vtk_array = vtk.vtkFloatArray()
+        vtk_array.SetNumberOfComponents(1)
+        vtk_array.SetName("PhysPropertyValue")
+        vtk_array.SetArray(voxel_data, voxel_data.size, 1)
+
+        # Assign data to structured grid.
+        structured_grid.GetPointData().SetScalars(vtk_array)
+
+        # Write to .vts file.
+        writer = vtk.vtkXMLStructuredGridWriter()
+        writer.SetFileName(filename + ".vts")
+        writer.SetInputData(structured_grid)
+        writer.Write()
+
+        # Print message for the user. 
+        # if verbose:
+        #     print("Voxet saved as " + filename + ".vts for visualization in ParaView.")
+    
+    else: 
+        print("\n VTK file for model " + filename + " not saved")
 
     return None
     

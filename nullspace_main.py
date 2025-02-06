@@ -82,10 +82,10 @@ def solve(par):
     # Read the model and model grid.
     model_filename = par.model_filename
     # mvars.m_beg: starting point for the nullspace navigation (unperturbed model).
-    mvars.m_beg, gpars = tr.read_tomofast_model(model_filename, gpars, convert_to_km=False)
+    mvars.m_beg, gpars = tr.read_tomofast_model(model_filename, gpars, convert_to_km=True)
 
     # Geological model for plots and comparison (not used in computation: only for plots).
-    mvars.m_geol_orig, _ = tr.read_tomofast_model(geol_model_path, gpars, convert_to_km=False)
+    mvars.m_geol_orig, _ = tr.read_tomofast_model(geol_model_path, gpars, convert_to_km=True)
 
     # ----------------------------------------------------------------------------------
   
@@ -131,7 +131,7 @@ def solve(par):
                                  time_step=par.time_step,
                                  weight_prior=weight_prior_model)  
     # Load model perturbation: the model change we want to impose (the final model should have this change).
-    mvars.delta_m_orig, _ = tr.read_tomofast_model(perturbation_filename, gpars)
+    mvars.delta_m_orig, _ = tr.read_tomofast_model(perturbation_filename, gpars, convert_to_km=True)
 
     # ----------------------------------------------------------------------------------
     # Initialization of nullspace navigation.
@@ -198,14 +198,12 @@ def solve(par):
     rotation_matrix = nu.get_rotation_matrix(use_rotation_matrix, rotation_mat_filename)
 
     # Save models for viz with VTK.
-    npt.save_model_to_vtk(mvars.m_curr, gpars, verbose=True, output_file_name='voxet_m_curr')
-    npt.save_model_to_vtk(mvars.m_nullspace_orig, gpars, verbose=True, output_file_name='m_nullspace_orig')
+    npt.save_model_to_vtk(mvars.m_curr, gpars, filename=par.path_output + '/voxet_m_curr', save=save_plots)
+    npt.save_model_to_vtk(mvars.m_nullspace_orig, gpars, filename=par.path_output + '/m_nullspace_orig', save=save_plots)
 
     # Save data for viz with VTK.
-    npt.save_data_to_vtk(grav_data, dataype_to_save='data_field', output_file_name='data_field')
-    npt.save_data_to_vtk(grav_data, dataype_to_save='data_calc', output_file_name='data_calc')
-
-    kkkkkk
+    npt.save_data_to_vtk(grav_data, datatype_to_save='data_field', filename=par.path_output + '/data_field', save=save_plots)
+    npt.save_data_to_vtk(grav_data, datatype_to_save='data_calc', filename=par.path_output + '/data_calc', save=save_plots)
 
     # %% ===============================================================================================
     # Do the plotting.
@@ -220,13 +218,10 @@ def solve(par):
     fig_gravpert = npt.plot_grav_perturbation(misfit_data, grav_data, grav_data_deltam, rotation_matrix,
                                               hamiltonian_quantities)
     
-
-
     # Save the plots.
     npt.save_plot(fig=fig_depthslice, filename=par.path_output + '/Differences_DepthSlice', ext='.png', save=save_plots)
     npt.save_plot(fig=fig_xsection, filename=par.path_output + '/Differences_VertSlice', ext='.png', save=save_plots)
     npt.save_plot(fig=fig_gravpert, filename=par.path_output + '/Metrics', ext='.png', dpi=300, save=save_plots)
-
 
 # =========================================================================================================
 def main(parfile_path):
