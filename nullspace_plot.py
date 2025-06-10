@@ -89,7 +89,7 @@ def save_data_to_vtk(geophy_dataclass, datatype_to_save='data_field', filename='
         print("\n VTK data file saved as: " + filename + ".vtp")
 
     else:
-        print("\n VTK file for data" + datatype_to_save + " not saved")
+        print("\n VTK file for data" + datatype_to_save + " NOT saved")
 
     return None
 
@@ -151,7 +151,7 @@ def save_model_to_vtk(voxel_data, grid_par_class, filename='voxet', save=True):
         #     print("Voxet saved as " + filename + ".vts for visualization in ParaView.")
     
     else: 
-        print("\n VTK file for model " + filename + " not saved")
+        print("\n VTK file for model " + filename + " NOT saved")
 
     return None
     

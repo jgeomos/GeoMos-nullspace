@@ -220,7 +220,6 @@ def stopping_check_progress(mvars, shpars, current_iteration_number):
     :param current_iteration_number: int.
     :return: boolean True/False depending on the condition for stopping the process.
     """
-    print('\n')
     # Print the progress bar with some info.
     print_progressbar(current_iteration_number + 1, shpars.num_epochs,
                       prefix='Progress over the maximum number of iterations',
