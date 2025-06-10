@@ -141,6 +141,7 @@ data/*
 *.jpg
 *.jpeg
 *.png
+/output/
 
 # generate app file
 app_ui.json

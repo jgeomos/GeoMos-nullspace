@@ -4,8 +4,8 @@ import numpy as np
 import colorcet as cc  # Used only for colormaps.
 import random as rd
 from typing import Optional
-from flows.forward_calculation_utils import rotate_mesh
-import flows.nullspace_utils as nu
+from flows.geomos.forward_calculation_utils import rotate_mesh
+import flows.geomos.nullspace_utils as nu
 import os
 import vtk
 

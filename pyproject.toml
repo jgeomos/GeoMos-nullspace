@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "GeoMos"
+version = "0.1.0"
+dynamic = ["dependencies"]
+description = "Scripts for null space exploration using gravity data"
+readme = "README.md"
+requires-python = ">=3.7"
+license = "MIT"
+authors = [{ name = "jgeomos", email = "jeremie.giraud@uwa.edu.au" }]
+keywords = ["null space exploration", "gravity", "Pyrenees"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/jgeomos/GeoMos-nullspace"
+Repository = "https://github.com/jgeomos/GeoMos-nullspace"
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+where = ["flows"]
+include = ["geomos*"]

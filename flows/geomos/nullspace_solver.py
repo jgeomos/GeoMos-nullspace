@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 import numpy as np
 from scipy.sparse import diags, csr_matrix
 from scipy import sparse
-import flows.forward_calculation_utils as fw
-import flows.nullspace_utils as nu
+import flows.geomos.forward_calculation_utils as fw
+import flows.geomos.nullspace_utils as nu
 from collections import Counter
 
 # TODO: typing the variables, eg use typing.Union[int,float,None]

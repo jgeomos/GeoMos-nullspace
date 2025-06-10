@@ -25,12 +25,12 @@ from pathlib import Path
 
 # The package is installed via "pip install ."
 from tomofast_utils import *
-import flows.tomofast_reading_utils as tr
-from flows.input_params import *
-import flows.nullspace_utils as nu
-from flows.forward_calculation_utils import *
-import flows.nullspace_solver as ns
-import flows.nullspace_plot as npt
+import flows.geomos.tomofast_reading_utils as tr
+from flows.geomos.input_params import *
+import flows.geomos.nullspace_utils as nu
+from flows.geomos.forward_calculation_utils import *
+import flows.geomos.nullspace_solver as ns
+import flows.geomos.nullspace_plot as npt
 import time
 
 import numpy as np
