@@ -8,6 +8,7 @@ from flows.geomos.forward_calculation_utils import rotate_mesh
 import flows.geomos.nullspace_utils as nu
 import os
 import vtk
+from onecode import file_output
 
 @dataclass
 class PlotParameters:
@@ -81,8 +82,14 @@ def save_data_to_vtk(geophy_dataclass, datatype_to_save='data_field', filename='
         poly_data.GetPointData().SetScalars(scalars_array)
 
         # Write to VTK file (.vtp format)
+        out_filename = filename + ".vtp"
         writer = vtk.vtkXMLPolyDataWriter()
-        writer.SetFileName(filename + ".vtp")
+        writer.SetFileName(
+            file_output(
+                key=os.path.basename(out_filename),
+                value=out_filename
+            )
+        )
         writer.SetInputData(poly_data)
         writer.Write()
 
@@ -141,8 +148,14 @@ def save_model_to_vtk(voxel_data, grid_par_class, filename='voxet', save=True):
         structured_grid.GetPointData().SetScalars(vtk_array)
 
         # Write to .vts file.
+        out_filename = filename + ".vts"
         writer = vtk.vtkXMLStructuredGridWriter()
-        writer.SetFileName(filename + ".vts")
+        writer.SetFileName(
+            file_output(
+                key=os.path.basename(out_filename),
+                value=out_filename
+            )
+        )
         writer.SetInputData(structured_grid)
         writer.Write()
 
@@ -628,4 +641,8 @@ def save_plot(fig=None, filename='myplot', ext='.png', dpi=300, save=False):
             fig = plt.gcf()
 
         # Do the saving;
-        fig.savefig(filename, dpi=dpi, format=ext_lower[1:])
+        fig.savefig(
+            file_output(key=os.path.basename(filename), value=filename),
+            dpi=dpi,
+            format=ext_lower[1:]
+        )

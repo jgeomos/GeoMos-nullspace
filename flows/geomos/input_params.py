@@ -1,131 +1,239 @@
-import configparser
-from dataclasses import dataclass
+import shutil
+import os
+
+from onecode import Project, file_input, checkbox, dropdown, number_input, slider
 
 
-@dataclass
 class InputParameters:
     """
-    A class to contains all input parameters used in the Parfile.
+    A class to contains all input parameters.
     """
-    # -------------------------------
-    # Section 'FilePaths'.
-    # -------------------------------
-    model_filename: str = ""
-    perturbation_filename: str = ""
-    # Geophysical data, e.g., Bouguer anomaly.
-    data_vals_filename = 'data/gravity_data/data_vals.txt'
-    # Value of the background model used, e.g., in the calculation of the Bouguer anomaly.
-    data_background_filename = 'data/gravity_data/data_background.txt'
-    path_output: str = "output/"
-    sensit_path: str = "input/SENSIT/"
-    rotation_mat_filename: str = ""
-    geol_model_path: str = ""
-    data_outline_filename: str = ""
+    def __init__(self):
+        # -------------------------------
+        # Section 'FilePaths'.
+        # -------------------------------
+        self.model_filename = file_input(
+            key='model_filename',
+            value='models/model_grid.txt',
+            label="Model of the area investigated"
+        )
+        self.perturbation_filename = file_input(
+            key='perturbation_filename',
+            value='models/delta_m_orig.txt',
+            label="Perturbation that will be add to the model"
+        )
+        # Geophysical data, e.g., Bouguer anomaly.
+        self.data_vals_filename = file_input(
+            key='data_vals_filename',
+            value='gravity_data/data_vals.txt',
+            label="File containing the gravity data"
+        )
+        # Value of the background model used, e.g., in the calculation of the Bouguer anomaly.
+        self.data_background_filename = file_input(
+            key='data_background_filename',
+            value='gravity_data/data_background.txt',
+            label="File containing the density response of the background model"
+        )
 
-    # -------------------------------
-    # Section 'SolverParameters'.
-    # -------------------------------
-    # Flag defining if we import sensitivity kernel from Tomofast-x.
-    use_tomofast_sensit: bool = True
-    # String of characters determining the type of inversion / sensitivity matrix ('grav' or 'magn').
-    sensit_type: str = ""
-    # Number of procs used to calculate the sensitivity kernel with Tomofast.
-    tomofast_sensit_nbproc: int = 1
-    # Flag defining whether we rotate the data for plotting.
-    use_rotation_matrix: bool = False
-    # Flag on unit conversion
-    unit_conv: bool = True
-    # Flag on whether we use a mask to reduce the domain where modifications of the model are allowed.
-    use_mask_domain: bool = True
-    # Weight of prior model term. (<0: larger variations, >0: smaller variations. Depth weight can go here)
-    weight_prior_model: float = -5.e-12
-    # - 2.5e-12 for plunging crust
-    # 1.e-11 for mantle chunk in axial zone.
-    # Tolerance on misfit variations during null space navigation.
-    eps: float = 0.25
-    # Maximum difference between the first model of navigation and the current model.
-    max_change: float = 440.
-    # Number of time steps.
-    num_epochs: int = 350
-    # Length of a time step (scales the perturbation at each iteration).
-    time_step: float = 100
+        sensit_files = file_input(
+            key='sensit_files',
+            value=[
+                'SENSIT/sensit_grav_5_0',
+                'SENSIT/sensit_grav_5_1',
+                'SENSIT/sensit_grav_5_2',
+                'SENSIT/sensit_grav_5_3',
+                'SENSIT/sensit_grav_5_4',
+                'SENSIT/sensit_grav_5_meta.dat',
+                'SENSIT/sensit_grav_5_weight',
+                'SENSIT/sensit_grav_meta.txt',
+                'SENSIT/sensit_grav_nnz',
+                'SENSIT/sensit_grav_weight',
+            ],
+            multiple=True,
+            label="Path to the sensitivity matrix",
+        )
+        self.sensit_path = Project().get_output_path('SENSIT')
+        os.makedirs(self.sensit_path, exist_ok=True)
+        for s_file in sensit_files:
+            shutil.copyfile(
+                s_file,
+                os.path.join(self.sensit_path, os.path.basename(s_file))
+            )
 
-    # -------------------------------
-    # Section 'GridParameters'.
-    # -------------------------------
-    # Dimensions of the mesh
-    nx: int = 54
-    ny: int = 68
-    nz: int = 31
+        self.rotation_mat_filename = file_input(
+            key='rotation_mat_filename', 
+            value='rotation_matrix.txt',
+            label="Path to rotation matrix",
+            optional=True
+        )
+        self.geol_model_path = file_input(
+            key='geol_model_path',
+            value='models/m_geol_orig.txt',
+            label="Path to geological or other reference model, used for plots only, to add a reference more for comparison",
+            optional=True
+        )
+        self.data_outline_filename = file_input(
+            key='data_outline_filename',
+            value='gravity_data/ouline_core_area_dots.txt',
+            label="Path to file containing the outline of the geophysical data ",
+            optional=True
+        )
 
-    # ------------------------------------
-    # Section 'PreProcessingParameters'.
-    # ------------------------------------
-    # Index of rock unit (by increasing density value) to define the mask on perturbations. 9 = Mantle.
-    ind_unit_mask: int = 9
-    # Distance max in number of cells away from the outline of rock unit considered.
-    distance_max: int = 4  # 4, 8 in tests shown in Pyrenees paper.
+        # -------------------------------
+        # Section 'SolverParameters'.
+        # -------------------------------
+        # Flag defining if we import sensitivity kernel from Tomofast-x.
+        self.use_tomofast_sensit = checkbox(
+            key='use_tomofast_sensit',
+            value=True,
+            label="Use Tomofast sensitivity"
+        )
 
-    # ------------------------------------
-    # Section 'SaveOutput'.
-    # ------------------------------------
-    save_plots: bool = False
+        # String of characters determining the type of inversion / sensitivity matrix ('grav' or 'magn').
+        self.sensit_type = dropdown(
+            key='sensit_type',
+            value='grav',
+            options=['grav', 'magn'],
+            label='Type of sensitivity matrix and inversion'
+        )
+
+        # Number of procs used to calculate the sensitivity kernel with Tomofast.
+        self.tomofast_sensit_nbproc = number_input(
+            key='tomofast_sensit_nbproc',
+            value=5,
+            min=1,
+            step=1,
+            label="Number of processors used to calculate the sensitivity kernel (with Tomofast-x inversion platform)"
+        )
+
+        # Flag defining whether we rotate the data for plotting.
+        self.use_rotation_matrix = checkbox(
+            key='use_rotation_matrix',
+            value=True,
+            label="Flag defining whether we rotate the data (for plotting only)"
+        )
+
+        # Flag on unit conversion
+        self.unit_conv = checkbox(
+            key="unit_conv",
+            value=True,
+            label="Flag on unit conversion of the input gravity data (apply a 1e2 factor to do mGal)"
+        )
+
+        # Flag on whether we use a mask to reduce the domain where modifications of the model are allowed.
+        self.use_mask_domain = checkbox(
+            key="unit_use_mask_domainconv",
+            value=True,
+            label="Flag on whether we use a mask to reduce the domain where modifications of the model are allowed"
+        )
+
+        # Weight of prior model term. (<0: larger variations, >0: smaller variations. Depth weight can go here)
+        # - 2.5e-12 for plunging crust
+        # 1.e-11 for mantle chunk in axial zone.
+        self.weight_prior_model = slider(
+            key='weight_prior_model',
+            value=-5.e-12,
+            min=-1.e-11,
+            max=1.e-11,
+            step=1e-12
+        )
+
+        # Tolerance on misfit variations during null space navigation.
+        self.eps = slider(
+            key='eps',
+            value=0.23,
+            min=0.,
+            max=1.,
+            step=0.01,
+            label="Tolerance on misfit variations during null space navigation"
+        )
+
+        # Maximum difference between the first model of navigation and the current model.
+        self.max_change = number_input(
+            key="max_change",
+            value=440,
+            min=0,
+            step=10,
+            label="Maximum difference between the first model of navigation and the current model (in kg/m^3)"
+        )
+
+        # Number of time steps.
+        self.num_epochs = slider(
+            key="num_epochs",
+            value=350,
+            min=10,
+            max=1000,
+            step=10,
+            label="Maximum number of time steps (= modifications of the model)"
+        )
+
+        # Length of a time step (scales the perturbation at each iteration).
+        self.time_step = number_input(
+            key="time_step",
+            value=100,
+            min=0,
+            step=10,
+            label="Length of a time step (scales the perturbation at each iteration: small time_step = small perturbation)"
+        )
+
+        # -------------------------------
+        # Section 'GridParameters'.
+        # -------------------------------
+        # Dimensions of the mesh
+        self.nx = number_input(
+            key='nx',
+            value=54,
+            min=2,
+            step=1,
+            label="Mesh Dimension (Nx)"
+        )
+        self.ny = number_input(
+            key='ny',
+            value=68,
+            min=2,
+            step=1,
+            label="Mesh Dimension (Ny)"
+        )
+        self.nz = number_input(
+            key='nz',
+            value=31,
+            min=2,
+            step=1,
+            label="Mesh Dimension (Nz)"
+        )
+
+        # ------------------------------------
+        # Section 'PreProcessingParameters'.
+        # ------------------------------------
+        # Index of rock unit (by increasing density value) to define the mask on perturbations. 9 = Mantle.
+        self.ind_unit_mask = number_input(
+            key="ind_unit_mask",
+            value=9,
+            min=1,
+            step=1,
+            label="Index of rock unit (by increasing density value) to define the mask on perturbations (in paper: 9 = Mantle)"
+        )
+
+        # Distance max in number of cells away from the outline of rock unit considered.
+        # 8 in tests shown in Pyrenees paper.
+        self.distance_max = number_input(
+            key="distance_max",
+            value=4,
+            min=1,
+            step=1,
+            label="Distance max in number of cells away from the outline of rock unit considered"
+        )
+
+        # ------------------------------------
+        # Section 'SaveOutput'.
+        # ------------------------------------
+        self.save_plots = checkbox(
+            key="save_plots",
+            value=True,
+            label="Flag controlling whether plots will be saved"
+        )
 
 
 # =============================================================================
-def read_input_parameters(parfile_path):
-    """
-    Read input parameters from Parfile.
-    """
-    config = configparser.ConfigParser()
-    if len(config.read(parfile_path)) == 0:
-        raise ValueError("Failed to open/find a parameters file!")
-
-    par = InputParameters()
-
-    section = 'FilePaths'
-    print(config.items(section))
-
-    par.model_filename = config.get(section, 'model_filename', fallback=par.model_filename)
-    par.perturbation_filename = config.get(section, 'perturbation_filename', fallback=par.perturbation_filename)
-    par.data_vals_filename = config.get(section, 'data_vals_filename', fallback=par.data_vals_filename)
-    par.data_background_filename = config.get(section, 'data_background_filename',
-                                              fallback=par.data_background_filename)
-    par.path_output = config.get(section, 'path_output', fallback=par.path_output)
-    par.sensit_path = config.get(section, 'sensit_path', fallback=par.sensit_path)
-    par.rotation_mat_filename = config.get(section, 'rotation_mat_filename', fallback=par.rotation_mat_filename)
-    par.geol_model_path = config.get(section, 'geol_model_path', fallback=par.geol_model_path)
-    par.data_outline_filename = config.get(section, 'data_outline_filename', fallback=par.data_outline_filename)
-
-    section = 'SolverParameters'
-    print(config.items(section))
-
-    par.sensit_type = config.get(section, 'sensit_type', fallback=par.sensit_type)
-    par.tomofast_sensit_nbproc = config.getint(section, 'tomofast_sensit_nbproc', fallback=par.tomofast_sensit_nbproc)
-    par.use_rotation_matrix = config.getboolean(section, 'use_rotation_matrix', fallback=par.use_rotation_matrix)
-    par.unit_conv = config.getboolean(section, 'unit_conv', fallback=par.unit_conv)
-    par.use_mask_domain = config.getboolean(section, 'use_mask_domain', fallback=par.use_mask_domain)
-    par.weight_prior_model = config.getfloat(section, 'weight_prior_model', fallback=par.weight_prior_model)
-    par.eps = config.getfloat(section, 'eps', fallback=par.eps)
-    par.max_change = config.getfloat(section, 'max_change', fallback=par.max_change)
-    par.num_epochs = config.getint(section, 'num_epochs', fallback=par.num_epochs)
-    par.time_step = config.getfloat(section, 'time_step', fallback=par.time_step)
-
-    section = 'GridParameters'
-    print(config.items(section))
-
-    par.nx = config.getint(section, 'nx', fallback=par.nx)
-    par.ny = config.getint(section, 'ny', fallback=par.ny)
-    par.nz = config.getint(section, 'nz', fallback=par.nz)
-
-    section = 'PreProcessingParameters'
-    print(config.items(section))
-
-    par.ind_unit_mask = config.getint(section, 'ind_unit_mask', fallback=par.ind_unit_mask)
-    par.distance_max = config.getint(section, 'distance_max', fallback=par.distance_max)
-
-    section = 'SaveOutput'
-    print(config.items(section))
-    par.save_plots = config.getboolean(section, 'save_plots', fallback=par.save_plots)
-
-    return par
+def read_input_parameters():
+    return InputParameters()

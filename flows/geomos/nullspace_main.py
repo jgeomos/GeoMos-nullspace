@@ -18,9 +18,6 @@ https://doi.org/10.1093/gji/ggae192, 2024.
 # plots to look inconsistent expected units are, e.g., meters.
 """
 
-from argparse import ArgumentParser
-import matplotlib
-import colorcet as cc
 from pathlib import Path
 
 # The package is installed via "pip install ."
@@ -32,8 +29,6 @@ from flows.geomos.forward_calculation_utils import *
 import flows.geomos.nullspace_solver as ns
 import flows.geomos.nullspace_plot as npt
 import time
-
-import numpy as np
 
 import platform
 print('Running with Python: ' + platform.python_version())
@@ -91,11 +86,6 @@ def solve(par):
   
     # Setup for saving plots.
     save_plots = par.save_plots
-
-    # Create output folder for plots.
-    if save_plots:
-        folder_path = Path(par.path_output)
-        folder_path.mkdir(parents=True, exist_ok=True)
 
     # ----------------------------------------------------------------------------------
     # Pre-processing parameters: definition of mask.
@@ -198,12 +188,12 @@ def solve(par):
     rotation_matrix = nu.get_rotation_matrix(use_rotation_matrix, rotation_mat_filename)
 
     # Save models for viz with VTK.
-    npt.save_model_to_vtk(mvars.m_curr, gpars, filename=par.path_output + '/voxet_m_curr', save=save_plots)
-    npt.save_model_to_vtk(mvars.m_nullspace_orig, gpars, filename=par.path_output + '/m_nullspace_orig', save=save_plots)
+    npt.save_model_to_vtk(mvars.m_curr, gpars, filename='voxet_m_curr', save=save_plots)
+    npt.save_model_to_vtk(mvars.m_nullspace_orig, gpars, filename='m_nullspace_orig', save=save_plots)
 
     # Save data for viz with VTK.
-    npt.save_data_to_vtk(grav_data, datatype_to_save='data_field', filename=par.path_output + '/data_field', save=save_plots)
-    npt.save_data_to_vtk(grav_data, datatype_to_save='data_calc', filename=par.path_output + '/data_calc', save=save_plots)
+    npt.save_data_to_vtk(grav_data, datatype_to_save='data_field', filename='data_field', save=save_plots)
+    npt.save_data_to_vtk(grav_data, datatype_to_save='data_calc', filename='data_calc', save=save_plots)
 
     # %% ===============================================================================================
     # Do the plotting.
@@ -219,25 +209,24 @@ def solve(par):
                                               hamiltonian_quantities)
     
     # Save the plots.
-    npt.save_plot(fig=fig_depthslice, filename=par.path_output + '/Differences_DepthSlice', ext='.png', save=save_plots)
-    npt.save_plot(fig=fig_xsection, filename=par.path_output + '/Differences_VertSlice', ext='.png', save=save_plots)
-    npt.save_plot(fig=fig_gravpert, filename=par.path_output + '/Metrics', ext='.png', dpi=300, save=save_plots)
+    npt.save_plot(fig=fig_depthslice, filename='Differences_DepthSlice', ext='.png', save=save_plots)
+    npt.save_plot(fig=fig_xsection, filename='Differences_VertSlice', ext='.png', save=save_plots)
+    npt.save_plot(fig=fig_gravpert, filename='Metrics', ext='.png', dpi=300, save=save_plots)
 
 # =========================================================================================================
-def main(parfile_path):
+def main():
     """
-    Main function of the Nullspace navigation script. It reads a parameter file (parfile) that contains the following:
+    Main function of the Nullspace navigation script. It needs the following inputs:
     - file paths,
     - solver parameters,
     that are required run the modelling and which can be changed by the user.
 
-    :param parfile_path: relative path to the parfile.
     :return:
     """
     print('Started nullspace main')
 
     # Read input parameters.
-    par = read_input_parameters(parfile_path)
+    par = read_input_parameters()
 
     # Record the start time
     start_time = time.time()
@@ -251,18 +240,3 @@ def main(parfile_path):
     # Calculate the elapsed time
     elapsed_time = end_time - start_time
     print('RUN TIME: ', elapsed_time, 'sec')
-
-
-# =============================================================================
-if __name__ == "__main__":
-    # Read command line arguments.
-    parser = ArgumentParser()
-    parser.add_argument("-p", "--parfile", dest="parfile_path",
-                        help="path to the parameters file", default="parfiles/Parfile_paper.txt")
-
-    # Get the information from the parameter file.
-    args = parser.parse_args()
-
-    # Run the main program.
-    main(args.parfile_path)
-    print('Completed.')
