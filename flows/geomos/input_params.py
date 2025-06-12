@@ -15,7 +15,7 @@ class InputParameters:
         self.model_filename = file_input(
             key='model_filename',
             value='models/model_grid.txt',
-            label="Model of the area investigated"
+            label="Model of the area investigated for the case study"
         )
         self.perturbation_filename = file_input(
             key='perturbation_filename',
