@@ -50,7 +50,7 @@ class InputParameters:
                 'SENSIT/sensit_grav_weight',
             ],
             multiple=True,
-            label="Path to the sensitivity matrix",
+            label="Files the sensitivity matrix (input ALL files)",
         )
         self.sensit_path = Project().get_output_path('SENSIT')
         os.makedirs(self.sensit_path, exist_ok=True)
