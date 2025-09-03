@@ -12,6 +12,8 @@ class InputParameters:
         # -------------------------------
         # Section 'FilePaths'.
         # -------------------------------
+        self.model_filename = 'models/model_grid.txt',
+
         self.model_filename = file_input(
             key='model_filename',
             value='models/model_grid.txt',
