@@ -19,27 +19,47 @@ class InputParameters:
         # )
         self.model_filename = 'models/model_grid.txt'
         
-        self.perturbation_filename = file_input(
-            key='perturbation_filename',
-            value='models/delta_m_orig.txt',
-            label="Perturbation that will be add to the model"
-        )
-        # Geophysical data, e.g., Bouguer anomaly.
-        self.data_vals_filename = file_input(
-            key='data_vals_filename',
-            value='gravity_data/data_vals.txt',
-            label="File containing the gravity data"
-        )
-        # Value of the background model used, e.g., in the calculation of the Bouguer anomaly.
-        self.data_background_filename = file_input(
-            key='data_background_filename',
-            value='gravity_data/data_background.txt',
-            label="File containing the density response of the background model"
-        )
+        # self.perturbation_filename = file_input(
+        #     key='perturbation_filename',
+        #     value='models/delta_m_orig.txt',
+        #     label="Perturbation that will be add to the model"
+        # )
+        self.perturbation_filename = 'models/delta_m_orig.txt'
 
-        sensit_files = file_input(
-            key='sensit_files',
-            value=[
+        # Geophysical data, e.g., Bouguer anomaly.
+        # self.data_vals_filename = file_input(
+        #     key='data_vals_filename',
+        #     value='gravity_data/data_vals.txt',
+        #     label="File containing the gravity data"
+        # )
+        self.data_vals_filename = 'gravity_data/data_vals.txt'
+
+        # Value of the background model used, e.g., in the calculation of the Bouguer anomaly.
+        # self.data_background_filename = file_input(
+        #     key='data_background_filename',
+        #     value='gravity_data/data_background.txt',
+        #     label="File containing the density response of the background model"
+        # )
+        self.data_background_filename = 'gravity_data/data_background.txt'
+
+        # sensit_files = file_input(
+        #     key='sensit_files',
+        #     value=[
+        #         'SENSIT/sensit_grav_5_0',
+        #         'SENSIT/sensit_grav_5_1',
+        #         'SENSIT/sensit_grav_5_2',
+        #         'SENSIT/sensit_grav_5_3',
+        #         'SENSIT/sensit_grav_5_4',
+        #         'SENSIT/sensit_grav_5_meta.dat',
+        #         'SENSIT/sensit_grav_5_weight',
+        #         'SENSIT/sensit_grav_meta.txt',
+        #         'SENSIT/sensit_grav_nnz',
+        #         'SENSIT/sensit_grav_weight',
+        #     ],
+        #     multiple=True,
+        #     label="Files the sensitivity matrix (input ALL files)",
+        # )
+        sensit_files = [
                 'SENSIT/sensit_grav_5_0',
                 'SENSIT/sensit_grav_5_1',
                 'SENSIT/sensit_grav_5_2',
@@ -51,9 +71,7 @@ class InputParameters:
                 'SENSIT/sensit_grav_nnz',
                 'SENSIT/sensit_grav_weight',
             ],
-            multiple=True,
-            label="Files the sensitivity matrix (input ALL files)",
-        )
+        
         self.sensit_path = Project().get_output_path('SENSIT')
         os.makedirs(self.sensit_path, exist_ok=True)
         for s_file in sensit_files:
@@ -62,34 +80,40 @@ class InputParameters:
                 os.path.join(self.sensit_path, os.path.basename(s_file))
             )
 
-        self.rotation_mat_filename = file_input(
-            key='rotation_mat_filename', 
-            value='rotation_matrix.txt',
-            label="Path to rotation matrix",
-            optional=True
-        )
-        self.geol_model_path = file_input(
-            key='geol_model_path',
-            value='models/m_geol_orig.txt',
-            label="Path to geological or other reference model, used for plots only, to add a reference more for comparison",
-            optional=True
-        )
-        self.data_outline_filename = file_input(
-            key='data_outline_filename',
-            value='gravity_data/ouline_core_area_dots.txt',
-            label="Path to file containing the outline of the geophysical data ",
-            optional=True
-        )
+        # self.rotation_mat_filename = file_input(
+        #     key='rotation_mat_filename', 
+        #     value='rotation_matrix.txt',
+        #     label="Path to rotation matrix",
+        #     optional=True
+        # )
+        self.rotation_mat_filename = 'rotation_matrix.txt'
+
+        # self.geol_model_path = file_input(
+        #     key='geol_model_path',
+        #     value='models/m_geol_orig.txt',
+        #     label="Path to geological or other reference model, used for plots only, to add a reference more for comparison",
+        #     optional=True
+        # )
+        self.geol_model_path = 'models/m_geol_orig.txt'
+
+        # self.data_outline_filename = file_input(
+        #     key='data_outline_filename',
+        #     value='gravity_data/ouline_core_area_dots.txt',
+        #     label="Path to file containing the outline of the geophysical data ",
+        #     optional=True
+        # )
+        self.data_outline_filename = 'gravity_data/ouline_core_area_dots.txt'
 
         # -------------------------------
         # Section 'SolverParameters'.
         # -------------------------------
         # Flag defining if we import sensitivity kernel from Tomofast-x.
-        self.use_tomofast_sensit = checkbox(
-            key='use_tomofast_sensit',
-            value=True,
-            label="Use Tomofast sensitivity"
-        )
+        # self.use_tomofast_sensit = checkbox(
+        #     key='use_tomofast_sensit',
+        #     value=True,
+        #     label="Use Tomofast sensitivity"
+        # )
+        self.use_tomofast_sensit = True
 
         # String of characters determining the type of inversion / sensitivity matrix ('grav' or 'magn').
         self.sensit_type = dropdown(
@@ -109,11 +133,12 @@ class InputParameters:
         )
 
         # Flag defining whether we rotate the data for plotting.
-        self.use_rotation_matrix = checkbox(
-            key='use_rotation_matrix',
-            value=True,
-            label="Flag defining whether we rotate the data (for plotting only)"
-        )
+        # self.use_rotation_matrix = checkbox(
+        #     key='use_rotation_matrix',
+        #     value=True,
+        #     label="Flag defining whether we rotate the data (for plotting only)"
+        # )
+        self.use_rotation_matrix = True
 
         # Flag on unit conversion
         self.unit_conv = checkbox(
