@@ -19,11 +19,11 @@ class InputParameters:
         # )
         self.model_filename = 'models/model_grid.txt'
         
-        # self.perturbation_filename = file_input(
-        #     key='perturbation_filename',
-        #     value='models/delta_m_orig.txt',
-        #     label="Perturbation that will be add to the model"
-        # )
+        self.perturbation_filename = file_input(
+            key='perturbation_filename',
+            value='models/delta_m_orig.txt',
+            label="Perturbation that will be added to the model"
+        )
         self.perturbation_filename = 'models/delta_m_orig.txt'
 
         # Geophysical data, e.g., Bouguer anomaly.
@@ -181,7 +181,7 @@ class InputParameters:
             value=440,
             min=0,
             step=10,
-            label="Maximum difference between the first model of navigation and the current model (in kg/m^3)"
+            label="Maximum difference between the first model and the current model (in kg/m^3)"
         )
 
         # Number of time steps.
@@ -207,28 +207,30 @@ class InputParameters:
         # Section 'GridParameters'.
         # -------------------------------
         # Dimensions of the mesh
-        self.nx = number_input(
-            key='nx',
-            value=54,
-            min=2,
-            step=1,
-            label="Mesh Dimension (Nx)"
-        )
-        self.ny = number_input(
-            key='ny',
-            value=68,
-            min=2,
-            step=1,
-            label="Mesh Dimension (Ny)"
-        )
-        self.nz = number_input(
-            key='nz',
-            value=31,
-            min=2,
-            step=1,
-            label="Mesh Dimension (Nz)"
-        )
-
+        # self.nx = number_input(
+        #     key='nx',
+        #     value=54,
+        #     min=2,
+        #     step=1,
+        #     label="Mesh Dimension (Nx)"
+        # )
+        # self.ny = number_input(
+        #     key='ny',
+        #     value=68,
+        #     min=2,
+        #     step=1,
+        #     label="Mesh Dimension (Ny)"
+        # )
+        # self.nz = number_input(
+        #     key='nz',
+        #     value=31,
+        #     min=2,
+        #     step=1,
+        #     label="Mesh Dimension (Nz)"
+        # )
+        self.nx = 54
+        self.ny = 68
+        self.nz = 31
         # ------------------------------------
         # Section 'PreProcessingParameters'.
         # ------------------------------------
