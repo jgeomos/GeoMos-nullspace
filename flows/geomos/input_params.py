@@ -12,12 +12,13 @@ class InputParameters:
         # -------------------------------
         # Section 'FilePaths'.
         # -------------------------------
-        # self.model_filename = file_input(
-        #     key='model_filename',
-        #     value='models/model_grid.txt',
-        #     label="Model of the area investigated for the case study"
-        # )
-        self.model_filename = 'models/model_grid.txt'
+        self.model_filename = file_input(
+            key='model_filename',
+            value='models/model_grid.txt',
+            label="Model of the area investigated for the case study"
+        )
+        print(self.model_filename)
+        # self.model_filename = 'models/model_grid.txt'
         
         self.perturbation_filename = file_input(
             key='perturbation_filename',
@@ -61,7 +62,7 @@ class InputParameters:
         # )
         sensit_files = [
                 '/data/SENSIT/sensit_grav_5_0',
-                '/data//SENSIT/sensit_grav_5_1',
+                '/data/SENSIT/sensit_grav_5_1',
                 '/data/SENSIT/sensit_grav_5_2',
                 '/data/SENSIT/sensit_grav_5_3',
                 '/data/SENSIT/sensit_grav_5_4',
@@ -142,11 +143,12 @@ class InputParameters:
         self.use_rotation_matrix = True
 
         # Flag on unit conversion
-        self.unit_conv = checkbox(
-            key="unit_conv",
-            value=True,
-            label="Unit conversion of the input gravity data (apply a 1e2 factor to do mGal)"
-        )
+        # self.unit_conv = checkbox(
+        #     key="unit_conv",
+        #     value=True,
+        #     label="Unit conversion of the input gravity data (apply a 1e2 factor to do mGal)"
+        # )
+        self.unit_conv = True
 
         # Flag on whether we use a mask to reduce the domain where modifications of the model are allowed.
         self.use_mask_domain = checkbox(
