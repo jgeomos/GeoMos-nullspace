@@ -42,24 +42,9 @@ class InputParameters:
         # )
         self.data_background_filename = 'gravity_data/data_background.txt'
 
-        sensit_files = file_input(
-            key='sensit_files',
-            value=[
-                '/onecode/app/data/SENSIT/sensit_grav_5_0',
-                '/onecode/app/data/SENSIT/sensit_grav_5_1',
-                '/onecode/app/data/SENSIT/sensit_grav_5_2',
-                '/onecode/app/data/SENSIT/sensit_grav_5_3',
-                '/onecode/app/data/SENSIT/sensit_grav_5_4',
-                '/onecode/app/data/SENSIT/sensit_grav_5_meta.dat',
-                '/onecode/app/data/SENSIT/sensit_grav_5_weight',
-                '/onecode/app/data/SENSIT/sensit_grav_meta.txt',
-                '/onecode/app/data/SENSIT/sensit_grav_nnz',
-                '/onecode/app/data/SENSIT/sensit_grav_weight',
-            ],
-            multiple=True,
-            label="Files the sensitivity matrix (input ALL files)",
-        )
-        # sensit_files = [
+        # sensit_files = file_input(
+        #     key='sensit_files',
+        #     value=[
         #         'data/SENSIT/sensit_grav_5_0',
         #         'data/SENSIT/sensit_grav_5_1',
         #         'data/SENSIT/sensit_grav_5_2',
@@ -70,7 +55,22 @@ class InputParameters:
         #         'data/SENSIT/sensit_grav_meta.txt',
         #         'data/SENSIT/sensit_grav_nnz',
         #         'data/SENSIT/sensit_grav_weight',
-        #     ]
+        #     ],
+        #     multiple=True,
+        #     label="Files the sensitivity matrix (input ALL files)",
+        # )
+        sensit_files = [
+                'data/SENSIT/sensit_grav_5_0',
+                'data/SENSIT/sensit_grav_5_1',
+                'data/SENSIT/sensit_grav_5_2',
+                'data/SENSIT/sensit_grav_5_3',
+                'data/SENSIT/sensit_grav_5_4',
+                'data/SENSIT/sensit_grav_5_meta.dat',
+                'data/SENSIT/sensit_grav_5_weight',
+                'data/SENSIT/sensit_grav_meta.txt',
+                'data/SENSIT/sensit_grav_nnz',
+                'data/SENSIT/sensit_grav_weight',
+            ]
         
         self.sensit_path = Project().get_output_path('SENSIT')
         os.makedirs(self.sensit_path, exist_ok=True)
