@@ -25,7 +25,7 @@ class InputParameters:
             value='models/delta_m_orig.txt',
             label="Perturbation that will be added to the model"
         )
-        self.perturbation_filename = 'models/delta_m_orig.txt'
+        # self.perturbation_filename = 'models/delta_m_orig.txt'
 
         # Geophysical data, e.g., Bouguer anomaly.
         self.data_vals_filename = file_input(
