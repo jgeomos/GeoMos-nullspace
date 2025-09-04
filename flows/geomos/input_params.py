@@ -43,35 +43,35 @@ class InputParameters:
         # )
         self.data_background_filename = 'gravity_data/data_background.txt'
 
-        # sensit_files = file_input(
-        #     key='sensit_files',
-        #     value=[
-        #         'data/SENSIT/sensit_grav_5_0',
-        #         'data/SENSIT/sensit_grav_5_1',
-        #         'data/SENSIT/sensit_grav_5_2',
-        #         'data/SENSIT/sensit_grav_5_3',
-        #         'data/SENSIT/sensit_grav_5_4',
-        #         'data/SENSIT/sensit_grav_5_meta.dat',
-        #         'data/SENSIT/sensit_grav_5_weight',
-        #         'data/SENSIT/sensit_grav_meta.txt',
-        #         'data/SENSIT/sensit_grav_nnz',
-        #         'data/SENSIT/sensit_grav_weight',
-        #     ],
-        #     multiple=True,
-        #     label="Files the sensitivity matrix (input ALL files)",
-        # )
-        sensit_files = [
-                '/data/inputs/data/SENSIT/sensit_grav_5_0',
-                '/data/SENSIT/sensit_grav_5_1',
-                '/data/SENSIT/sensit_grav_5_2',
-                '/data/SENSIT/sensit_grav_5_3',
-                '/data/SENSIT/sensit_grav_5_4',
-                '/data/SENSIT/sensit_grav_5_meta.dat',
-                '/data/SENSIT/sensit_grav_5_weight',
-                '/data/SENSIT/sensit_grav_meta.txt',
-                '/data/SENSIT/sensit_grav_nnz',
-                '/data/SENSIT/sensit_grav_weight',
-            ]
+        sensit_files = file_input(
+            key='sensit_files',
+            value=[
+                'data/SENSIT/sensit_grav_5_0',
+                'data/SENSIT/sensit_grav_5_1',
+                'data/SENSIT/sensit_grav_5_2',
+                'data/SENSIT/sensit_grav_5_3',
+                'data/SENSIT/sensit_grav_5_4',
+                'data/SENSIT/sensit_grav_5_meta.dat',
+                'data/SENSIT/sensit_grav_5_weight',
+                'data/SENSIT/sensit_grav_meta.txt',
+                'data/SENSIT/sensit_grav_nnz',
+                'data/SENSIT/sensit_grav_weight',
+            ],
+            multiple=True,
+            label="Files the sensitivity matrix (input ALL files)",
+        )
+        # sensit_files = [
+        #         '/data/inputs/data/SENSIT/sensit_grav_5_0',
+        #         '/data/inputs/data/SENSIT/sensit_grav_5_1',
+        #         '/data/inputs/data/SENSIT/sensit_grav_5_2',
+        #         '/data/inputs/data/SENSIT/sensit_grav_5_3',
+        #         '/data/inputs/data/SENSIT/sensit_grav_5_4',
+        #         '/data/inputs/data/SENSIT/sensit_grav_5_meta.dat',
+        #         '/data/inputs/data/SENSIT/sensit_grav_5_weight',
+        #         '/data/inputs/data/SENSIT/sensit_grav_meta.txt',
+        #         '/data/inputs/data/SENSIT/sensit_grav_nnz',
+        #         '/data/inputs/data/SENSIT/sensit_grav_weight',
+        #     ]
         
         self.sensit_path = Project().get_output_path('SENSIT')
         os.makedirs(self.sensit_path, exist_ok=True)
@@ -80,6 +80,8 @@ class InputParameters:
                 s_file,
                 os.path.join(self.sensit_path, os.path.basename(s_file))
             )
+
+        print(self.sensit_path)
 
         # self.rotation_mat_filename = file_input(
         #     key='rotation_mat_filename', 
