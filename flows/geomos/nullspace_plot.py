@@ -186,8 +186,8 @@ def set_plotprops():
     Set default plot properties to use for all plots in the script.
     """
 
-    plt.rcParams["font.family"] = "Times New Roman"
-    plt.rcParams.update({'font.size': 13})
+    # plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams.update({'font.size': 11})
 
 
 def plot_addticks_cbar(cbar_title, cbar_ticks):
@@ -202,7 +202,7 @@ def plot_addticks_cbar(cbar_title, cbar_ticks):
     cbar = plt.colorbar(shrink=0.75, ticks=cbar_ticks)
     # cbar.set_label(cbar_title, labelpad=-20, y=-0.015, rotation=0, fontfamily='serif')
     # cbar.set_label(cbar_title, labelpad=-20, x=1.15, y=-0.02, rotation=0)
-    cbar.set_label(cbar_title, labelpad=-20, x=1.10, y=1.125, rotation=0)
+    cbar.set_label(cbar_title, labelpad=-20, x=1.075, y=1.08, rotation=0)
 
     ## Changing the font of ticks.
     # for i in cbar.ax.yaxis.get_title():
@@ -499,7 +499,7 @@ def plot_navigation_depthslice(mpars, ppars, rotation_matrix, indice_scatter, ou
 
     coord_x, coord_y, coord_z = rotate_mesh(mpars, rotation_matrix)
 
-    fig = plt.figure(rd.randint(0, int(1e6)), figsize=(8, 8))
+    fig = plt.figure(rd.randint(0, int(1e6)), figsize=(11, 11))
 
     for i in range(0, n_subplots):
         ax = fig.add_subplot(n_row_subplots, n_columns_subplot, i + 1)
