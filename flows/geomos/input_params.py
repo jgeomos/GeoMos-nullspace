@@ -70,7 +70,7 @@ class InputParameters:
                 'SENSIT/sensit_grav_meta.txt',
                 'SENSIT/sensit_grav_nnz',
                 'SENSIT/sensit_grav_weight',
-            ],
+            ]
         
         self.sensit_path = Project().get_output_path('SENSIT')
         os.makedirs(self.sensit_path, exist_ok=True)
