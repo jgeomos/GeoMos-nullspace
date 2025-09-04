@@ -61,7 +61,7 @@ class InputParameters:
         #     label="Files the sensitivity matrix (input ALL files)",
         # )
         sensit_files = [
-                '/data/SENSIT/sensit_grav_5_0',
+                '/data/inputs/data/SENSIT/sensit_grav_5_0',
                 '/data/SENSIT/sensit_grav_5_1',
                 '/data/SENSIT/sensit_grav_5_2',
                 '/data/SENSIT/sensit_grav_5_3',
