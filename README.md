@@ -56,7 +56,6 @@ The file format for the input files is compatible with Tomofast-x's.
 
 ### Note about plotting
 Some values for the parameters of plots are hardcoded (e.g., color limits, geographical locations of selected slices). The best setup for plots is expected to vary between different studies; some manual changes for plot parameters may be required when using the code to a new study area. 
-<!-- ADD THE POSSIBILITY TO SAVE FILES IN VTK FORMAT FOR PARAVIEW IN THE FUTURE -->
 
 ## Acknowledgments
 Jérémie Giraud acknowledges support from European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No. 101032994 for the "GeoMos" project.
