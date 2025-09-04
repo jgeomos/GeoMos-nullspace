@@ -120,17 +120,18 @@ class InputParameters:
             key='sensit_type',
             value='grav',
             options=['grav', 'magn'],
-            label='Type of sensitivity matrix and inversion'
+            label='Type of geophysical data'
         )
 
         # Number of procs used to calculate the sensitivity kernel with Tomofast.
-        self.tomofast_sensit_nbproc = number_input(
-            key='tomofast_sensit_nbproc',
-            value=5,
-            min=1,
-            step=1,
-            label="Number of processors used to calculate the sensitivity kernel (with Tomofast-x inversion platform)"
-        )
+        # self.tomofast_sensit_nbproc = number_input(
+        #     key='tomofast_sensit_nbproc',
+        #     value=5,
+        #     min=1,
+        #     step=1,
+        #     label="Number of processors used to calculate the sensitivity kernel (with Tomofast-x)"
+        # )
+        self.tomofast_sensit_nbproc = 5
 
         # Flag defining whether we rotate the data for plotting.
         # self.use_rotation_matrix = checkbox(
@@ -144,14 +145,14 @@ class InputParameters:
         self.unit_conv = checkbox(
             key="unit_conv",
             value=True,
-            label="Flag on unit conversion of the input gravity data (apply a 1e2 factor to do mGal)"
+            label="Unit conversion of the input gravity data (apply a 1e2 factor to do mGal)"
         )
 
         # Flag on whether we use a mask to reduce the domain where modifications of the model are allowed.
         self.use_mask_domain = checkbox(
             key="unit_use_mask_domainconv",
             value=True,
-            label="Flag on whether we use a mask to reduce the domain where modifications of the model are allowed"
+            label="Use a mask to control where modifications are allowed"
         )
 
         # Weight of prior model term. (<0: larger variations, >0: smaller variations. Depth weight can go here)
@@ -240,7 +241,7 @@ class InputParameters:
             value=9,
             min=1,
             step=1,
-            label="Index of rock unit (by increasing density value) to define the mask on perturbations (in paper: 9 = Mantle)"
+            label="Mask: Index of rock unit (by increasing density value) to define the mask on perturbations (in paper: 9 = Mantle)"
         )
 
         # Distance max in number of cells away from the outline of rock unit considered.
@@ -250,17 +251,18 @@ class InputParameters:
             value=4,
             min=1,
             step=1,
-            label="Distance max in number of cells away from the outline of rock unit considered"
+            label="Mask: Distance max in number of cells away from masking rock unit"
         )
 
         # ------------------------------------
         # Section 'SaveOutput'.
         # ------------------------------------
-        self.save_plots = checkbox(
-            key="save_plots",
-            value=True,
-            label="Flag controlling whether plots will be saved"
-        )
+        # self.save_plots = checkbox(
+        #     key="save_plots",
+        #     value=True,
+        #     label="Will plots be saved"
+        # )
+        self.save_plots = True
 
 
 # =============================================================================
